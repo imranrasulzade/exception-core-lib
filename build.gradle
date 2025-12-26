@@ -1,0 +1,99 @@
+plugins {
+    id 'java'
+    id 'maven-publish'
+    id 'signing'
+    id 'io.spring.dependency-management' version '1.1.5'
+    id 'org.springframework.boot' version '3.2.5' apply true
+}
+
+group = 'com.imran'
+version = '1.0.0'
+java.sourceCompatibility = JavaVersion.VERSION_17
+
+repositories {
+    mavenCentral()
+}
+
+
+dependencies {
+
+    implementation 'org.springframework.boot:spring-boot-starter-web:3.2.5'
+    implementation 'org.springframework.boot:spring-boot-autoconfigure:3.2.5'
+    implementation 'org.springframework.boot:spring-boot-starter-validation:3.2.5'
+    implementation 'org.springframework.boot:spring-boot-starter-aop:3.2.5'
+
+    compileOnly 'org.projectlombok:lombok:1.18.32'
+    annotationProcessor 'org.projectlombok:lombok:1.18.32'
+}
+
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
+
+tasks.withType(Test).configureEach {
+    useJUnitPlatform()
+}
+
+bootJar {
+    enabled = false
+}
+
+jar {
+    enabled = true
+}
+
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+            artifactId = 'exception-core-lib'
+
+            pom {
+                name = 'Exception Library'
+                description = 'Custom Exception Handling Library with i18n, traceId, AOP logging, and auto-configuration.'
+                url = 'https://github.com/imranrasulzade/exception-core-lib'
+
+                licenses {
+                    license {
+                        name = 'MIT License'
+                        url = 'https://opensource.org/licenses/MIT'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id = 'imran'
+                        name = 'Imran Rasulzade'
+                        email = 'imranrasulzade5@gmail.com'
+                    }
+                }
+
+                scm {
+                    url = 'https://github.com/imranrasulzade/exception-core-lib'
+                    connection = 'scm:git:git://github.com/imranrasulzade/exception-core-lib.git'
+                    developerConnection = 'scm:git:ssh://github.com:imranrasulzade/exception-core-lib.git'
+                }
+            }
+        }
+    }
+
+    repositories {
+        // Lokal test üçün: publishToMavenLocal
+        // Terminal: `./gradlew publishToMavenLocal`
+        mavenLocal()
+
+        // maven {
+        //     url = uri("https://maven.pkg.github.com/imranrasulzade/exception-core-lib")
+        //     credentials {
+        //         username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
+        //         password = project.findProperty("gpr.key") ?: System.getenv("TOKEN")
+        //     }
+        // }
+    }
+}
+
+signing {
+    required { false }
+}
