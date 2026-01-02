@@ -1,15 +1,11 @@
 plugins {
-    id 'java'
+    id 'java-library'
     id 'maven-publish'
     id 'signing'
-    id 'io.spring.dependency-management' version '1.1.5'
-    id 'org.springframework.boot' version '3.2.5' apply true
 }
 
-group = 'com.imran'
+group = 'io.github.imranrasulzade'
 version = '1.0.0'
-java.sourceCompatibility = JavaVersion.VERSION_17
-
 
 java {
     toolchain { languageVersion = JavaLanguageVersion.of(17) }
@@ -17,40 +13,26 @@ java {
     withJavadocJar()
 }
 
-
-repositories {
-    mavenCentral()
-}
-
+repositories { mavenCentral() }
 
 dependencies {
+    api "org.springframework:spring-web:6.1.6"
 
-    implementation 'org.springframework.boot:spring-boot-starter-web:3.2.5'
-    implementation 'org.springframework.boot:spring-boot-autoconfigure:3.2.5'
-    implementation 'org.springframework.boot:spring-boot-starter-validation:3.2.5'
-    implementation 'org.springframework.boot:spring-boot-starter-aop:3.2.5'
+    api "org.springframework.boot:spring-boot-autoconfigure:3.2.5"
 
-    compileOnly 'org.projectlombok:lombok:1.18.32'
-    annotationProcessor 'org.projectlombok:lombok:1.18.32'
+    api "org.springframework.boot:spring-boot-starter-validation:3.2.5"
+
+    api "org.springframework.boot:spring-boot-starter-aop:3.2.5"
+
+    compileOnly "jakarta.servlet:jakarta.servlet-api:6.0.0"
+    testImplementation 'jakarta.servlet:jakarta.servlet-api:6.0.0'
+
+
+    compileOnly "org.projectlombok:lombok:1.18.32"
+    annotationProcessor "org.projectlombok:lombok:1.18.32"
 }
 
-
-tasks.withType(JavaCompile).configureEach {
-    options.encoding = 'UTF-8'
-}
-
-tasks.withType(Test).configureEach {
-    useJUnitPlatform()
-}
-
-bootJar {
-    enabled = false
-}
-
-jar {
-    enabled = true
-}
-
+tasks.test { useJUnitPlatform() }
 
 publishing {
     publications {
@@ -60,7 +42,7 @@ publishing {
 
             pom {
                 name = "exception-core-lib"
-                description = "Production-ready exception handling library for Spring Boot"
+                description = "Production-ready exception handling library for Spring Boot (i18n, traceId, AOP logging, auto-configuration)."
                 url = "https://github.com/imranrasulzade/exception-core-lib"
 
                 licenses {
@@ -72,7 +54,7 @@ publishing {
 
                 developers {
                     developer {
-                        id = "imran"
+                        id = "imranrasulzade"
                         name = "Imran Rasulzade"
                         email = "rasulzade002@gmail.com"
                     }
@@ -90,18 +72,37 @@ publishing {
     repositories {
         maven {
             name = "OSSRH"
-            url = uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
+            url = uri("https://ossrh-staging-api.central.sonatype.com/service/local/staging/deploy/maven2/")
             credentials {
                 username = findProperty("ossrhUsername")
                 password = findProperty("ossrhPassword")
             }
         }
     }
+
 }
 
+//signing {
+//    def key = findProperty("signingKey")
+//    def pass = findProperty("signingPassword")
+//
+//    if (key != null && key.toString().trim()) {
+//        useInMemoryPgpKeys(
+//                key.toString().replace("\\n", "\n"),
+//                pass != null ? pass.toString() : ""
+//        )
+//        sign publishing.publications.mavenJava
+//    }
+//}
 signing {
+    useGpgCmd()
     sign publishing.publications.mavenJava
 }
-signing {
-    required { false }
+
+
+tasks.withType(Javadoc).configureEach {
+    options.encoding = 'UTF-8'
+    options.addStringOption('Xdoclint:none', '-quiet')
+    failOnError = false
 }
+
