@@ -5,10 +5,16 @@ plugins {
 }
 
 group = 'io.github.imranrasulzade'
-version = '1.0.0'
+version = '1.1.0'
+
+ext {
+    springBootVersion = '4.0.3'
+    lombokVersion = '1.18.32'
+    servletApiVersion = '6.1.0'
+}
 
 java {
-    toolchain { languageVersion = JavaLanguageVersion.of(17) }
+    toolchain { languageVersion = JavaLanguageVersion.of(21) }
     withSourcesJar()
     withJavadocJar()
 }
@@ -16,23 +22,31 @@ java {
 repositories { mavenCentral() }
 
 dependencies {
-    api "org.springframework:spring-web:6.1.6"
+    implementation platform("org.springframework.boot:spring-boot-dependencies:${springBootVersion}")
+    testImplementation platform("org.springframework.boot:spring-boot-dependencies:${springBootVersion}")
 
-    api "org.springframework.boot:spring-boot-autoconfigure:3.2.5"
+    api "org.springframework:spring-web"
 
-    api "org.springframework.boot:spring-boot-starter-validation:3.2.5"
+    implementation "org.springframework.boot:spring-boot-autoconfigure"
+    implementation "org.springframework.boot:spring-boot-starter-validation"
+    implementation "org.springframework:spring-aop"
+    implementation "org.aspectj:aspectjweaver"
 
-    api "org.springframework.boot:spring-boot-starter-aop:3.2.5"
+    compileOnly "jakarta.servlet:jakarta.servlet-api:${servletApiVersion}"
+    testImplementation "jakarta.servlet:jakarta.servlet-api:${servletApiVersion}"
 
-    compileOnly "jakarta.servlet:jakarta.servlet-api:6.0.0"
-    testImplementation 'jakarta.servlet:jakarta.servlet-api:6.0.0'
+    compileOnly "org.projectlombok:lombok:${lombokVersion}"
+    annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
 
-
-    compileOnly "org.projectlombok:lombok:1.18.32"
-    annotationProcessor "org.projectlombok:lombok:1.18.32"
+    testImplementation "org.springframework.boot:spring-boot-starter-test-classic"
+    testRuntimeOnly "org.junit.platform:junit-platform-launcher"
 }
 
 tasks.test { useJUnitPlatform() }
+
+tasks.withType(JavaCompile).configureEach {
+    options.release = 21
+}
 
 publishing {
     publications {
@@ -42,7 +56,7 @@ publishing {
 
             pom {
                 name = "exception-core-lib"
-                description = "Production-ready exception handling library for Spring Boot (i18n, traceId, AOP logging, auto-configuration)."
+                description = "Production-ready exception handling library for Spring Boot 4 (i18n, traceId, AOP logging, auto-configuration)."
                 url = "https://github.com/imranrasulzade/exception-core-lib"
 
                 licenses {
@@ -105,4 +119,3 @@ tasks.withType(Javadoc).configureEach {
     options.addStringOption('Xdoclint:none', '-quiet')
     failOnError = false
 }
-

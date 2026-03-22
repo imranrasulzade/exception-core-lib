@@ -10,6 +10,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.support.ResourceBundleMessageSource;
 
 
@@ -39,7 +40,8 @@ public class ExceptionAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public ExceptionMessageResolver exceptionMessageResolver(MessageSource imranExceptionMessageSource) {
+    public ExceptionMessageResolver exceptionMessageResolver(
+            @Qualifier("imranExceptionMessageSource") MessageSource imranExceptionMessageSource) {
         return new ExceptionMessageResolver(imranExceptionMessageSource);
     }
 

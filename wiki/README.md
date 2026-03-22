@@ -1,6 +1,6 @@
 # exception-core-lib
 
-exception-core-lib — A production-ready exception handling library for Spring Boot 3.
+exception-core-lib — A production-ready exception handling library for Spring Boot 4.
 This library solves the following problems in a centralized and standardized way:
 
 * BaseException and ErrorCode architecture
@@ -20,7 +20,7 @@ After adding the Library to the project, it works without writing additional con
 * X-Trace-Id header + MDC integration
 * Automatic logging of all exceptions with AOP
 * Unified and stable error response format
-* Spring Boot 3 AutoConfiguration support
+* Spring Boot 4 AutoConfiguration support
 
 ## Architecture
 ```psql
@@ -49,8 +49,8 @@ exception-core-lib
 ```
 
 ## Requirements
-* **Java 17+**
-* **Spring Boot 3.x**
+* **Java 21 or Java 25**
+* **Spring Boot 4.x**
 * **Gradle or Maven**
 
 ## Installation
