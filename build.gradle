@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'io.github.imranrasulzade'
-version = '1.1.0'
+version = '1.1.1'
 
 ext {
     springBootVersion = '4.0.3'
@@ -14,14 +14,19 @@ ext {
 }
 
 java {
-    toolchain { languageVersion = JavaLanguageVersion.of(21) }
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
     withSourcesJar()
     withJavadocJar()
 }
 
-repositories { mavenCentral() }
+repositories {
+    mavenCentral()
+}
 
 dependencies {
+
     implementation platform("org.springframework.boot:spring-boot-dependencies:${springBootVersion}")
     testImplementation platform("org.springframework.boot:spring-boot-dependencies:${springBootVersion}")
 
@@ -42,7 +47,9 @@ dependencies {
     testRuntimeOnly "org.junit.platform:junit-platform-launcher"
 }
 
-tasks.test { useJUnitPlatform() }
+tasks.test {
+    useJUnitPlatform()
+}
 
 tasks.withType(JavaCompile).configureEach {
     options.release = 21
@@ -88,34 +95,40 @@ publishing {
             name = "OSSRH"
             url = uri("https://ossrh-staging-api.central.sonatype.com/service/local/staging/deploy/maven2/")
             credentials {
-                username = findProperty("ossrhUsername")
-                password = findProperty("ossrhPassword")
+                username = findProperty("ossrhUsername") ?: System.getenv("OSSRH_USERNAME")
+                password = findProperty("ossrhPassword") ?: System.getenv("OSSRH_PASSWORD")
             }
         }
     }
 
 }
 
-//signing {
-//    def key = findProperty("signingKey")
-//    def pass = findProperty("signingPassword")
-//
-//    if (key != null && key.toString().trim()) {
-//        useInMemoryPgpKeys(
-//                key.toString().replace("\\n", "\n"),
-//                pass != null ? pass.toString() : ""
-//        )
-//        sign publishing.publications.mavenJava
-//    }
-//}
 signing {
-    useGpgCmd()
-    sign publishing.publications.mavenJava
+
+    def signingKey = findProperty("signingKey") ?: System.getenv("GPG_SIGNING_KEY")
+    def signingPassword = findProperty("signingPassword") ?: System.getenv("GPG_SIGNING_PASSWORD")
+
+    if (signingKey != null) {
+
+        useInMemoryPgpKeys(
+                signingKey.toString().replace("\\n", "\n"),
+                signingPassword ?: ""
+        )
+
+        sign publishing.publications.mavenJava
+
+    } else {
+
+        useGpgCmd()
+        sign publishing.publications.mavenJava
+
+    }
 }
 
-
 tasks.withType(Javadoc).configureEach {
-    options.encoding = 'UTF-8'
-    options.addStringOption('Xdoclint:none', '-quiet')
+
+    options.encoding = "UTF-8"
+    options.addStringOption("Xdoclint:none", "-quiet")
+
     failOnError = false
 }
